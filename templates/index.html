@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus Recruitment Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .hero-bg {
+            background-image: linear-gradient(to bottom, #1e3a8a, #1f2937);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 1s ease-out forwards; }
+        .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .animate-on-scroll.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card-hover-effect {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50 animate-fadeIn">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <a href="/" class="text-xl font-bold text-gray-900">CampusRecruit</a>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#top" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Home</a>
+                <a href="#about" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">About</a>
+                <a href="#process" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Process</a>
+                <a href="#contact" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Contact</a>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{% url 'login' %}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors">Sign In</a>
+                <div class="relative">
+                    <button id="signUpBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                        Sign Up
+                    </button>
+                    <div id="signUpDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-10">
+                        <a href="{% url 'student_signup' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Student Sign Up</a>
+                        <a href="{% url 'admin_signup' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Admin Sign Up</a>
+                    </div>
+                </div>
+                <button id="mobileMenuBtn" class="md:hidden text-gray-500 hover:text-indigo-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobileMenu" class="hidden md:hidden bg-white shadow-md">
+            <a href="#top" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Home</a>
+            <a href="#about" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">About</a>
+            <a href="#process" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Process</a>
+            <a href="#contact" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Contact</a>
+        </div>
+    </header>
+    <a id="top" class="absolute top-0"></a>
+
+    <main class="hero-bg text-white py-20 md:py-32">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="text-center md:text-left animate-fadeInUp">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4">
+                    Smart Campus <br class="hidden sm:block"> Recruitment Analysis
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-300 max-w-xl mx-auto md:mx-0 mb-8">
+                    An intelligent platform to streamline campus recruitment, providing valuable insights for both students and recruiters.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#about" class="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors flex items-center space-x-2">
+                        <span>Learn More</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="hidden md:flex justify-center items-center animate-fadeIn">
+                <img src="{% static 'images/logo.png' %}" alt="CampusRecruit Logo" class="w-full h-auto max-w-md">
+            </div>
+        </div>
+    </main>
+
+    <section id="about" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12 animate-on-scroll">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">About Our Platform</h2>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    We provide a data-driven approach to campus placements, helping students and companies connect more efficiently.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-8 rounded-lg shadow-md card-hover-effect animate-on-scroll">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Student Insights</h3>
+                    <p class="text-gray-600">
+                        Detailed analytics on student performance, skills, and eligibility for various roles.
+                    </p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md card-hover-effect animate-on-scroll">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <path d="M20 8v6M23 11h-6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Recruiter Dashboard</h3>
+                    <p class="text-gray-600">
+                        Easy-to-use tools for companies to post jobs, screen resumes, and manage interviews.
+                    </p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md card-hover-effect animate-on-scroll">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                            <line x1="12" y1="20" x2="12" y2="10"></line>
+                            <line x1="18" y1="20" x2="18" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="16"></line>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Smart Analysis</h3>
+                    <p class="text-gray-600">
+                        Predictive analysis to help both sides find the perfect match with minimal effort.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="process" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12 animate-on-scroll">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Our Campus Recruitment Process</h2>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    A simple and transparent process designed for maximum efficiency.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="animate-on-scroll">
+                    <ol class="space-y-8">
+                        <li class="flex items-start space-x-4">
+                            <span class="flex items-center justify-center w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full font-bold text-lg">1</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">Registration & Profile Creation</h3>
+                                <p class="text-gray-600 mt-1">Students and admins register on the platform and create detailed profiles, including academic records and company requirements.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-4">
+                            <span class="flex items-center justify-center w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full font-bold text-lg">2</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">Job Posting & Application</h3>
+                                <p class="text-gray-600 mt-1">Companies post job openings, and students can browse and apply for roles that match their skills and interests.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-4">
+                            <span class="flex items-center justify-center w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full font-bold text-lg">3</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">Screening & Shortlisting</h3>
+                                <p class="text-gray-600 mt-1">Our system uses smart algorithms to help recruiters screen applications and shortlist suitable candidates.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-4">
+                            <span class="flex items-center justify-center w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full font-bold text-lg">4</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">Interview & Placement</h3>
+                                <p class="text-gray-600 mt-1">Recruiters schedule interviews through the platform, leading to final placements and job offers.</p>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                <div class="hidden md:flex justify-center items-center animate-on-scroll">
+                    <img src="{% static 'images/img2.avif' %}" alt="Recruitment Process" class="rounded-lg shadow-2xl w-full h-auto object-cover max-w-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="bg-gray-800 text-gray-300 py-12">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 animate-on-scroll">
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">CampusRecruit</h3>
+                <p>Your smart partner for campus placement success.</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="#top" class="hover:text-white transition-colors">Home</a></li>
+                    <li><a href="#about" class="hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="#process" class="hover:text-white transition-colors">Recruitment Process</a></li>
+                    <li><a href="#contact" class="hover:text-white transition-colors">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Contact Info</h3>
+                <ul class="space-y-2">
+                    <li>Email: <a href="mailto:info@campusrecruit.com" class="hover:text-white transition-colors">info@campusrecruit.com</a></li>
+                    <li>Phone: <a href="tel:+1234567890" class="hover:text-white transition-colors">+1 (234) 567-890</a></li>
+                    <li>Address: 123 Campus Lane, College Town, USA</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Newsletter</h3>
+                <p>Stay updated with the latest in campus placements.</p>
+                <form action="/subscribe/" method="post" id="newsletter-form" class="mt-4">
+                    <input type="email" name="email" placeholder="Your email address" class="w-full p-2 rounded-lg bg-gray-700 text-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button type="submit" class="mt-2 w-full bg-indigo-600 text-white p-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-500">
+            <p>&copy; 2025 Smart Campus Recruitment Analysis. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        // Basic mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+        //document.getElementById('signUpBtn').addEventListener('click', () => {
+            //document.getElementById('signUpDropdown').classList.toggle('hidden');
+        //});
+
+        // Scroll animation (simplified)
+        function checkInView() {
+            document.querySelectorAll('.animate-on-scroll').forEach(element => {
+                const rect = element.getBoundingClientRect();
+                if (rect.top >= 0 && rect.top <= window.innerHeight) {
+                    element.classList.add('in-view');
+                }
+            });
+        }
+        window.addEventListener('scroll', checkInView);
+        checkInView();
+    </script>
+</body>
+</html>

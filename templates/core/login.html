@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - CampusRecruit</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+        }
+        /* Animations from index.html */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 1s ease-out forwards; }
+        .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .animate-on-scroll.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card-hover-effect {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 animate-fadeIn">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <!-- Logo Section -->
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <a href="/" class="text-xl font-bold text-gray-900">CampusRecruit</a>
+            </div>
+            <!-- Navigation Links -->
+            <div class="hidden md:flex space-x-6">
+                <a href="/" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Home</a>
+                <a href="/#about" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">About</a>
+                <a href="/#process" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Process</a>
+                <a href="/#contact" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Login Form -->
+    <main class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md card-hover-effect animate-fadeInUp">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Sign In</h2>
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                            <div class="bg-{% if message.tags == 'success' %}green-100 text-green-700{% else %}red-100 text-red-700{% endif %} p-4 rounded-lg">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="{{ form.username.id_for_label }}" class="block text-gray-600 font-medium mb-2">Username</label>
+                        <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="w-full p-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        {% if form.username.errors %}
+                            <div class="text-red-600 text-sm mt-1">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-6">
+                        <label for="{{ form.password.id_for_label }}" class="block text-gray-600 font-medium mb-2">Password</label>
+                        <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="w-full p-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        {% if form.password.errors %}
+                            <div class="text-red-600 text-sm mt-1">
+                                {% for error in form.password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">Sign In</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript for animations -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

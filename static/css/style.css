@@ -1,0 +1,214 @@
+/* In your base.html <style> or static/css/style.css */
+
+/* --- General Enhancements (ensure these are present and updated) --- */
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    font-size: 20px;  /* Increase default font size */
+
+}
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.08);
+    z-index: 1030;
+    background: linear-gradient(90deg, #343a40 0%, #212529 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.navbar-brand img {
+    height: 30px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+.main-wrapper {
+    display: flex;
+    flex: 1;
+}
+.sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    box-shadow: 2px 0 5px rgba(0,0,0,.05);
+    padding-top: 20px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 56px);
+}
+@media (max-width: 991.98px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        box-shadow: none;
+        padding-bottom: 0;
+    }
+    .main-content {
+        padding-left: 0 !important;
+    }
+}
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+.footer {
+    background-color: #343a40;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    width: 100%;
+}
+
+/* Base Card Styling (applied to all .card.shadow-sm/lg) */
+.card.shadow-sm, .card.shadow-lg, .dashboard-card { /* Added .dashboard-card */
+    border: none;
+    border-radius: 0.75rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.card.shadow-sm:hover, .card.shadow-lg:hover, .dashboard-card:hover { /* Added .dashboard-card */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.card-title {
+    color: #343a40;
+}
+.form-control {
+    border-radius: 0.5rem;
+}
+
+/* Button Styles with Shimmer (from previous response) */
+.btn-primary, .btn-success, .btn-info, .btn-dark, .btn-secondary { /* Added .btn-secondary for shimmer */
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.4s ease-in-out;
+    border-radius: 0.5rem;
+}
+.btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-dark:hover, .btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.btn-primary::before, .btn-success::before, .btn-info::before, .btn-dark::before, .btn-secondary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 30%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: skewX(-20deg);
+    transition: all 0.5s ease-in-out;
+}
+.btn-primary:hover::before, .btn-success:hover::before, .btn-info:hover::before, .btn-dark:hover::before, .btn-secondary:hover::before {
+    left: 100%;
+}
+
+/* Outline button hover */
+.btn-outline-primary:hover { background-color: #0d6efd !important; color: white !important; box-shadow: 0 3px 10px rgba(13, 110, 253, 0.3); transform: translateY(-2px); }
+.btn-outline-secondary:hover { background-color: #6c757d !important; color: white !important; box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3); transform: translateY(-2px); }
+.btn-outline-info:hover { background-color: #0dcaf0 !important; color: white !important; box-shadow: 0 3px 10px rgba(13, 202, 240, 0.3); transform: translateY(-2px); }
+
+/* Card Headers with Gradients (from previous response) */
+.card-header.bg-dark { background: linear-gradient(90deg, #343a40 0%, #495057 100%) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.card-header.bg-primary { background: linear-gradient(90deg, #0d6efd 0%, #0a58ca 100%) !important; }
+.card-header.bg-success { background: linear-gradient(90deg, #198754 0%, #157347 100%) !important; }
+.card-header.bg-info { background: linear-gradient(90deg, #0dcaf0 0%, #31d2f2 100%) !important; }
+.card-header.bg-secondary { background: linear-gradient(90deg, #6c757d 0%, #5c636a 100%) !important; }
+
+/* Animated underline for nav links on hover (from previous response) */
+.navbar-nav .nav-link { position: relative; }
+.navbar-nav .nav-link::after { content: ''; width: 0%; height: 2px; background-color: #0d6efd; left: 0; bottom: -5px; transition: width 0.3s ease-in-out; }
+.navbar-nav .nav-link:hover::after { width: 100%; }
+
+/* --- NEW/UPDATED CSS FOR ADMIN DASHBOARD UI --- */
+
+/* Dashboard Stat Tiles (replacing .stat-card) */
+.dashboard-stat-tile {
+    display: flex;
+    flex-direction: column; /* Stack icon and text */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    padding: 25px 15px; /* More padding */
+    border-radius: 12px; /* More rounded */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15); /* Stronger shadow for pop */
+    text-align: center; /* Ensure text is centered */
+    min-height: 150px; /* Consistent height */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* For hover effect */
+    border: none; /* No border for a flatter look */
+}
+.dashboard-stat-tile:hover {
+    transform: translateY(-8px); /* More pronounced lift */
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25); /* Stronger shadow on hover */
+}
+
+/* Icon for Dashboard Stat Tiles */
+.dashboard-stat-tile .icon-lg {
+    font-size: 3.5rem; /* Larger icon */
+    margin-bottom: 10px; /* Space below icon */
+    line-height: 1; /* Adjust line height for icon */
+}
+
+/* Text content for Dashboard Stat Tiles */
+.dashboard-stat-tile .stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.dashboard-stat-tile .stat-label {
+    font-size: 0.95rem; /* Slightly larger label */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+.dashboard-stat-tile .stat-number {
+    font-size: 3rem; /* Much larger number */
+    font-weight: 800; /* Bolder */
+    line-height: 1; /* Compact line height */
+}
+
+/* Specific background colors for new tiles (using Bootstrap colors) */
+.dashboard-stat-tile.bg-danger { background: linear-gradient(45deg, #dc3545, #b02a37); }
+.dashboard-stat-tile.bg-success { background: linear-gradient(45deg, #198754, #146c43); }
+.dashboard-stat-tile.bg-primary { background: linear-gradient(45deg, #0d6efd, #0a58ca); }
+.dashboard-stat-tile.bg-warning { background: linear-gradient(45deg, #ffc107, #d39e00); }
+.dashboard-stat-tile.bg-info { background: linear-gradient(45deg, #0dcaf0, #0aa8c3); }
+.dashboard-stat-tile.bg-secondary { background: linear-gradient(45deg, #6c757d, #5c636a); }
+
+
+/* Styling for the main dashboard content cards (Recent Jobs, Applications) */
+.dashboard-card {
+    border: 1px solid #e0e0e0; /* Subtle border */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Lighter shadow */
+    border-radius: 12px; /* More rounded corners */
+}
+.dashboard-card .card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-top-left-radius: 12px; /* Match card border radius */
+    border-top-right-radius: 12px; /* Match card border radius */
+}
+.dashboard-card .card-body {
+    padding: 25px; /* More internal padding */
+}
+.dashboard-card .card-footer {
+    background-color: #f8f9fa; /* Lighter footer */
+    border-top: 1px solid #e9ecef;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    padding: 15px 25px; /* Consistent padding */
+}
+
+/* Table styling for dashboard tables */
+.dashboard-card table thead.table-dark {
+    background: linear-gradient(90deg, #343a40 0%, #495057 100%) !important; /* Gradient for table header */
+    color: white;
+}
+.dashboard-card table tbody tr:last-child {
+    border-bottom: none; /* No border on last row */
+}

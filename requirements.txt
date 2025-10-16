@@ -1,0 +1,7 @@
+Django>=4.2,<5.0
+asgiref>=3.7.2
+sqlparse>=0.4.4
+tzdata>=2023.3
+Pillow>=10.0.0          # If you use image uploads (student profile pictures, company logos, etc.)
+crispy-bootstrap5>=0.7  # For better styled Django forms (optional but common in your type of project)
+django-widget-tweaks>=1.5.0  # For customizing form rendering in templates

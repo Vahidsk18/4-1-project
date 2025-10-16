@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Applications - CampusRecruit</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    {% load static %}
+    <style>
+        body { font-family: 'Inter', sans-serif; font-size: 18px; }
+        .card-hover-effect { transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; }
+        .card-hover-effect:hover { transform: translateY(-5px); box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.15); }
+        .table-hover tbody tr:hover { background-color: rgba(79, 70, 229, 0.05); }
+        .icon-hover { transition: transform 0.2s ease-in-out; }
+        .icon-hover:hover { transform: scale(1.2); }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <a href="{% url 'admin_dashboard' %}" class="text-2xl font-bold text-gray-900">CampusRecruit</a>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="{% url 'logout' %}" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-16">
+        <div class="container mx-auto px-6">
+
+            <!-- Page Title -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">All Student Applications</h1>
+                <p class="text-gray-600 mt-2">View all applications across job drives.</p>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover-effect">
+                {% if all_applications %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left table-hover">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="py-3 text-gray-700 font-semibold">Student</th>
+                                    <th class="py-3 text-gray-700 font-semibold">Job Role</th>
+                                    <th class="py-3 text-gray-700 font-semibold">Company</th>
+                                    <th class="py-3 text-gray-700 font-semibold">Applied At</th>
+                                    <th class="py-3 text-gray-700 font-semibold">Status</th>
+                                    <th class="py-3 text-gray-700 font-semibold">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in all_applications %}
+                                    <tr class="border-b border-gray-200 even:bg-gray-50">
+                                        <td class="py-3">{{ app.student.user.username|default:"N/A" }}</td>
+                                        <td class="py-3">{{ app.job.job_role|default:"N/A" }}</td>
+                                        <td class="py-3">{{ app.job.company_name|default:"N/A" }}</td>
+                                        <td class="py-3">{{ app.applied_at|date:"M d, Y H:i"|default:"N/A" }}</td>
+                                        <td class="py-3">
+                                            <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-sm font-medium">{{ app.get_status_display|default:"N/A" }}</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <a href="{% url 'applications_for_job' app.job.id %}" class="text-indigo-600 hover:text-indigo-800 font-medium"><i class="bi bi-eye icon-hover"></i> View</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-gray-600">No applications found.</p>
+                {% endif %}
+            </div>
+ 
+            <!-- Back to Dashboard -->
+            <div class="mt-6 text-right">
+                <a href="{% url 'admin_dashboard' %}" class="inline-block bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-2 rounded-lg font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all"><i class="bi bi-arrow-left icon-hover"></i> Back to Dashboard</a>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Scroll animations if needed
+        document.addEventListener('DOMContentLoaded', () => {
+            function checkInView() {
+                document.querySelectorAll('.animate-on-scroll').forEach(element => {
+                    const rect = element.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top <= window.innerHeight) {
+                        element.classList.add('in-view');
+                    }
+                });
+            }
+            window.addEventListener('scroll', checkInView);
+            checkInView();
+        });
+    </script>
+</body>
+</html>

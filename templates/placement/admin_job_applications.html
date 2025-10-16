@@ -1,0 +1,171 @@
+{% load static %}
+{% load core_filters %} 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; font-size: 18px; background-color: #f0f2f5; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 1s ease-out forwards; }
+        .animate-fadeInUp { animation: fadeInUp 1s ease-out forwards; }
+        .animate-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+        .animate-on-scroll.in-view { opacity: 1; transform: translateY(0); }
+        .card-hover-effect { transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; }
+        .card-hover-effect:hover { transform: translateY(-5px); box-shadow: 0 12px 20px -4px rgba(0, 0, 0, 0.15); }
+        .table-hover tbody tr:hover { background-color: rgba(79, 70, 229, 0.05); }
+        .icon-hover { transition: transform 0.2s ease-in-out; }
+        .icon-hover:hover { transform: scale(1.2); }
+        /* CSS Classes mapped from Recommendations (Strong Fit -> strong, Average -> average, Low Match -> low) */
+        .tag-strong { background-color: #10b981; color: white; } /* Emerald */
+        .tag-average { background-color: #f59e0b; color: white; } /* Amber */
+        .tag-low { background-color: #f87171; color: white; } /* Red */
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <header class="bg-white shadow-sm sticky top-0 z-50 animate-fadeIn">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <a href="/" class="text-2xl font-bold text-gray-900">CampusRecruit</a>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="{% url 'logout' %}" class="text-gray-600 hover:text-indigo-600 font-medium transition-colors">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="py-16">
+        <div class="container mx-auto px-6">
+            <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white rounded-xl shadow-lg p-8 mb-10 animate-fadeInUp">
+                <h1 class="text-3xl font-bold">Applications for: {{ job.job_role|default:"All Jobs" }}</h1>
+                <p class="text-indigo-100 mt-2">Total Applications: <span class="bg-white text-indigo-800 font-bold px-2 py-1 rounded-full text-lg">{{ all_applications_count }}</span></p>
+            </div>
+            
+            <div class="flex flex-col lg:flex-row gap-8">
+                <aside class="lg:w-1/4 bg-white rounded-xl shadow-md p-6 card-hover-effect animate-on-scroll">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-5">Quick Actions</h2>
+                    <ul class="space-y-4">
+                        <li><a href="{% url 'admin_dashboard' %}" class="flex items-center bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100"><i class="bi bi-house-fill text-lg mr-3 icon-hover"></i> Dashboard</a></li>
+                        <li><a href="{% url 'admin_job_list' %}" class="flex items-center bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100"><i class="bi bi-briefcase-fill text-lg mr-3 icon-hover"></i> Active Drives</a></li>
+                        <li><a href="{% url 'job_create' %}" class="flex items-center bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100"><i class="bi bi-plus-circle text-lg mr-3 icon-hover"></i> Post New Jobs</a></li>
+                        <li><a href="{% url 'student_list_admin' %}" class="flex items-center bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100"><i class="bi bi-people-fill text-lg mr-3 icon-hover"></i> Student Profile</a></li>
+                        <li><a href="{% url 'all_applications_list' %}" class="flex items-center bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100"><i class="bi bi-list-columns-reverse text-lg mr-3 icon-hover"></i> All Applications</a></li>
+                    </ul>
+                </aside>
+
+               <div class="lg:w-11/12 mx-auto">
+    {% if applications %}
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden animate-on-scroll">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-indigo-700 text-white text-sm lg:text-base">
+                        <tr>
+                            <th class="p-4 font-semibold">Student</th>
+                            <th class="p-4 font-semibold">Roll No.</th>
+                            <th class="p-4 font-semibold">CGPA</th>
+                            <th class="p-4 font-semibold">Backlogs</th>
+                            <th class="p-4 font-semibold">Skills</th>
+                            <th class="p-4 font-semibold">Match Score</th>
+                            <th class="p-4 font-semibold">Recommendation</th>
+                            <th class="p-4 font-semibold">Applied At</th>
+                            <th class="p-4 font-semibold">Resume</th>
+                            <th class="p-4 font-semibold text-center">Review</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-800 text-sm lg:text-base">
+                        {% for app in applications %}
+                            <tr class="border-b border-gray-200 hover:bg-indigo-50 transition duration-200">
+                                <td class="p-4 ">
+                                    <span class="text-lg font-extrabold text-gray-900">{{ app.student.user.first_name }} {{ app.student.user.last_name }}</span>
+                                    <br>
+                                    <span class="text-sm text-gray-500">({{ app.student.user.username }})</span>
+                                </td>
+                                <td class="p-4">{{ app.student.roll_number }}</td>
+                                <td class="p-4 font-medium">{{ app.student.cgpa|default:"N/A" }}</td>
+                                <td class="p-4">{{ app.student.backlogs }}</td>
+                                <td class="p-4 max-w-[180px] truncate text-gray-700">{{ app.student.skills|default:"-" }}</td>
+                                <td class="p-4">
+                                    <span class="text-lg font-extrabold {% if app.match_percentage >= 90 %}text-green-600{% elif app.match_percentage >= 60 %}text-yellow-600{% else %}text-red-600{% endif %}">
+                                        {{ app.match_percentage|default:"0" }}%
+                                    </span>
+                                </td>
+                                <td class="p-4">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold tag-{{ app.recommendation|recommendation_slugify }}">
+                                        {{ app.recommendation }}
+                                    </span>
+                                </td>
+                                <td class="p-4 text-gray-600">{{ app.applied_at|date:"M d, Y H:i" }}</td>
+                                <td class="p-4">
+                                    {% if app.student.resume_file %}
+                                        <a href="{{ app.student.resume_file.url }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
+                                            <i class="bi bi-file-earmark-text"></i> View
+                                        </a>
+                                    {% else %}
+                                        <span class="text-gray-500">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 min-w-[220px]">
+                                    <form method="post" action="{% url 'update_application_status' app.id %}" class="space-y-2">
+                                        {% csrf_token %}
+                                        <select name="status" class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                            {% for s_value, s_display in app.APPLICATION_STATUS_CHOICES %}
+                                                <option value="{{ s_value }}" {% if app.status == s_value %}selected{% endif %}>{{ s_display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <textarea name="admin_comments" class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" rows="3" placeholder="Add comments...">{{ app.admin_comments|default:"" }}</textarea>
+                                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-indigo-700 transition duration-200">
+                                            <i class="bi bi-save"></i> Update
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="bg-white rounded-2xl shadow-md p-8 text-center text-gray-600 text-lg">
+            No applications found for this job with the current filters.
+        </div>
+    {% endif %}
+</div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 py-6 text-center">
+        <div class="container mx-auto">&copy; 2025 CampusRecruit. All rights reserved.</div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function checkInView() {
+                document.querySelectorAll('.animate-on-scroll').forEach(element => {
+                    const rect = element.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top <= window.innerHeight) {
+                        element.classList.add('in-view');
+                    }
+                });
+            }
+            window.addEventListener('scroll', checkInView);
+            checkInView();
+        });
+    </script>
+</body>
+</html>
