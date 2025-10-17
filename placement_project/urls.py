@@ -21,6 +21,7 @@ def subscribe_newsletter(request):
     return redirect('home')
 
 urlpatterns = [
+    # path('admin/', admin.site.urls),
     # Landing page
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
 
@@ -61,6 +62,12 @@ urlpatterns = [
     path('student/jobs/', login_required(placement_views.student_job_list), name='student_job_list'),
     path('student/jobs/<int:job_id>/apply/', login_required(placement_views.apply_for_job), name='apply_for_job'),
 
+    # --- NEW: IOT/PLACED STUDENTS URLS (ADDED FOR YOUR REQUEST) ---
+    # 1. JSON Feed for IoT devices (NO login_required)
+    path('api/iot/placed_feed/json/', placement_views.placed_students_json_feed, name='placed_students_json_feed'),
+    # 2. Web View for easy testing/simple displays (NO login_required)
+    path('api/iot/placed_feed/web/', placement_views.placed_students_web_feed, name='placed_students_web_feed'),
+    
     # Newsletter subscription
     path('subscribe/', subscribe_newsletter, name='subscribe_newsletter'),
 ]

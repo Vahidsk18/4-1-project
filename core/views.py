@@ -127,11 +127,15 @@ def user_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.info(request, f"You are now logged in as {username}.")
+                
+                # --- MODIFIED LOGIC: Only show login message for students ---
                 if user.user_type == 'admin':
+                    # No message for admin on login (as requested)
                     return redirect('admin_dashboard')
                 elif user.user_type == 'student':
+                    messages.info(request, f"You are now logged in as {username}.") # Keep message for student
                     return redirect('student_dashboard')
+                # -----------------------------------------------------------
                 else:
                     messages.error(request, "Unknown user type. Please contact support.")
                     logout(request)
@@ -387,7 +391,7 @@ def extract_text_from_docx(docx_path):
 
 def parse_resume_text(text):
     if not nlp:
-        return {'skills': '', 'education': '', 'experience': '', 'phone_number': ''}
+        return {'skills': '', 'education': '', 'experience': '', 'phone_number': '', 'cgpa': None, 'backlogs': None}
 
     doc = nlp(text)
     
@@ -395,7 +399,37 @@ def parse_resume_text(text):
     education = []
     experience = []
     phone_number = ""
+    cgpa = None
+    backlogs = None
     
+    # --- CGPA Extraction ---
+    # Looks for 'CGPA' or 'GPA' followed by a number format X.X or X.XX
+    # Use a broad search and extract the first match
+    cgpa_match = re.search(r'(cgpa|gpa|score|percentage)\D*(\d\.\d{1,2}|\d{2,3})', text, re.IGNORECASE)
+    if cgpa_match:
+        try:
+            # Clean and convert the matched number to a float
+            cgpa_str = cgpa_match.group(2).replace(',', '.')
+            if '.' not in cgpa_str and len(cgpa_str) > 2: # Handle 85 (for 8.5/10 or 85%)
+                cgpa_value = float(cgpa_str) / 10.0 # Arbitrary guess for 85 -> 8.5
+            else:
+                cgpa_value = float(cgpa_str)
+            
+            # Simple validation: CGPA should be between 0.00 and 10.00
+            if 0.0 <= cgpa_value <= 10.0:
+                cgpa = round(cgpa_value, 2)
+        except ValueError:
+            pass
+            
+    # --- Backlogs Extraction ---
+    # Looks for 'backlog' or 'arrear' followed by a number (0, 1, 2, etc.)
+    backlogs_match = re.search(r'(backlogs|arrears|backlog|arrear)\D*(\d+)', text, re.IGNORECASE)
+    if backlogs_match:
+        try:
+            backlogs = int(backlogs_match.group(2))
+        except ValueError:
+            pass
+
     # --- ENHANCED SKILL LIST ---
     common_skills = [
         "python", "java", "django", "react", "sql", "data analysis", "machine learning", 
@@ -433,6 +467,8 @@ def parse_resume_text(text):
         'education': "\n".join(list(set(education))),
         'experience': "\n".join(list(set(experience))),
         'phone_number': phone_number,
+        'cgpa': cgpa,      # NEW FIELD
+        'backlogs': backlogs # NEW FIELD
     }
     return parsed_data
 
@@ -456,6 +492,13 @@ def parse_resume_for_student(student_profile):
         student_profile.education = parsed_data.get('education', student_profile.education)
         student_profile.experience = parsed_data.get('experience', student_profile.experience)
         student_profile.phone_number = parsed_data.get('phone_number', student_profile.phone_number)
+        
+        # --- UPDATE CGPA/BACKLOGS ONLY IF A VALID VALUE WAS FOUND ---
+        if parsed_data.get('cgpa') is not None:
+            student_profile.cgpa = parsed_data.get('cgpa')
+        if parsed_data.get('backlogs') is not None:
+            student_profile.backlogs = parsed_data.get('backlogs')
+        # -----------------------------------------------------------
         
         student_profile.save()
         print(f"Resume parsed and profile updated for {student_profile.user.username}")

@@ -12,7 +12,7 @@ import re
 from django.utils import timezone
 from datetime import date
 from placement.ml_service import get_job_specific_prediction 
-
+from django.http import JsonResponse # <-- NEW IMPORT
 
 # --- HELPER FUNCTION: Score Application for Admin Shortlisting (MODIFIED) ---
 def score_application(application):
@@ -452,3 +452,77 @@ def apply_for_job(request, job_id):
     Application.objects.create(student=student_profile, job=job)
     messages.success(request, f"Successfully applied for {job.job_role} at {job.company_name}!")
     return redirect('student_dashboard')
+
+
+# --- NEW VIEWS FOR IOT/PLACED STUDENT FEED ---
+
+def placed_students_json_feed(request):
+    """
+    API endpoint to fetch unique students who are shortlisted or accepted.
+    NOTE: In a production environment, this should be protected by an API key.
+    """
+    
+    # 1. Filter applications for the desired statuses
+    applications = Application.objects.filter(
+        Q(status='shortlisted') | Q(status='accepted') # Filter for 'shortlisted' or 'accepted'
+    ).select_related('student__user', 'job').order_by('-applied_at')
+    
+    # 2. Extract unique student data, keeping only the most recent application status
+    data = []
+    unique_students = set()
+
+    for app in applications:
+        # We only want each student once, based on the highest status/latest application in the query set
+        if app.student.user.id not in unique_students:
+            unique_students.add(app.student.user.id)
+            
+            # Format the name (First Name + Last Name, fallback to username)
+            full_name = f"{app.student.user.first_name} {app.student.user.last_name}".strip()
+            if not full_name:
+                full_name = app.student.user.username
+            
+            data.append({
+                'name': full_name,
+                'roll_number': app.student.roll_number,
+                'status': app.get_status_display(), # e.g., 'Shortlisted' or 'Accepted'
+                'company': app.job.company_name,
+                'role': app.job.job_role,
+            })
+            
+    return JsonResponse(data, safe=False)
+
+
+def placed_students_web_feed(request):
+    """
+    Simple HTML view wrapper for the placed student data, useful for testing the endpoint.
+    """
+    
+    # Re-use the data fetching logic from the JSON feed
+    applications = Application.objects.filter(
+        Q(status='shortlisted') | Q(status='accepted') 
+    ).select_related('student__user', 'job').order_by('-applied_at')
+    
+    display_list = []
+    unique_students = set()
+
+    for app in applications:
+        if app.student.user.id not in unique_students:
+            unique_students.add(app.student.user.id)
+            
+            full_name = f"{app.student.user.first_name} {app.student.user.last_name}".strip()
+            if not full_name:
+                full_name = app.student.user.username
+            
+            display_list.append({
+                'name': full_name,
+                'roll_number': app.student.roll_number,
+                'status': app.get_status_display(), 
+                'company': app.job.company_name,
+                'role': app.job.job_role,
+            })
+
+    context = {
+        'placed_students': display_list
+    }
+    
+    return render(request, 'placement/iot_placed_feed.html', context)
